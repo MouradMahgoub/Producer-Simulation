@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import simulation.producer.models.observer.Subject;
 
 import java.awt.*;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -13,31 +12,68 @@ import java.util.Random;
 
 public class Machine extends Subject implements Runnable{
 
-    private WebSocketController webSocketController;
-    private static int count=0;
-    private int id = 0;
+    private static int count = 0;
+    private static String defaultColor;
 
-    private List<Queue> observerList=new ArrayList<>();
-    private Queue outQueue = new Queue();
-    private Color defaultColor;
-    private Color currentColor;
+    
+    private int id;
+    private String x;
+    private String y;
+
+    private List<Queue> observerList = new ArrayList<Queue>();
+    private Queue outQueue;
+    private String currentColor;
     private int serviceTime;
-//    private boolean state;
 
-    @Autowired
-    public Machine(WebSocketController webSocketController) {
-        this.webSocketController = webSocketController;
-    }
     public Machine(){
         this.id = count++;
-        Random randcol = new Random();
-        this.currentColor = new Color(randcol.nextInt(256), randcol.nextInt(256), randcol.nextInt(256));
+        this.x = x;
+        this.y = y;
+        this.serviceTime = (new Random()).nextInt(2, 8)*1000;
+        Machine.defaultColor = defaultColor;
     }
 
-    public Machine(Color color){
-        this.id = count++;
-        this.defaultColor = color;
+    // convert a rgb Color representation to hexa representation
+
+    // generate a random color in hexa representation
+    public static String generateRandomColor(){
+        Random random = new Random();
+        return "#"+Integer.toHexString(random.nextInt(255)).substring(2)+Integer.toHexString(random.nextInt(255)).substring(2)+Integer.toHexString(random.nextInt(255)).substring(2);
     }
+
+
+    // //set color random in hexa representation
+    // public static void setDefaultColor(String hexaColor){
+    //     defaultColor = Color.decode(hexaColor);
+    // }
+
+    // //set color random in hexa representation
+    // public static void setDefaultColor(){
+    //     Random random = new Random();
+    //     defaultColor = new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+    // }
+
+    // //send color in hexa representation
+    // public String getDefaultColor(){
+    //     return "#"+Integer.toHexString(defaultColor.getRGB()).substring(2);
+    // }
+
+    public String getX(){
+        return this.x;
+    }
+
+    public void setX(String x){
+        this.x = x;
+    }
+    
+    public String getY(){
+        return this.y;
+    }
+
+    public void setY(String y){
+        this.y = y;
+    }
+
 
     public List<Queue> getObserverList() {
         return observerList;
@@ -60,20 +96,15 @@ public class Machine extends Subject implements Runnable{
         return id;
     }
 
-
-    public Color getDefaultColor() {
+    public String getDefaultColor() {
         return defaultColor;
     }
 
-    public void setDefaultColor(Color defaultColor) {
-        this.defaultColor = defaultColor;
-    }
-
-    public Color getCurrentColor() {
+    public String getCurrentColor() {
         return currentColor;
     }
 
-    public void setCurrentColor(Color currentColor) {
+    public void setCurrentColor(String currentColor) {
         this.currentColor = currentColor;
     }
 
@@ -85,15 +116,6 @@ public class Machine extends Subject implements Runnable{
         this.serviceTime = serviceTime;
     }
 
-//    public boolean isState() {
-//        return state;
-//    }
-//
-//    public void setReady(boolean ready) {
-//        state = ready;
-//    }
-
-
     public void attach(Queue addQueue){
         observerList.add(addQueue);
     }
@@ -104,19 +126,14 @@ public class Machine extends Subject implements Runnable{
 
     public synchronized void process(Product currentProduct){
         this.currentColor = currentProduct.getColor();
-        Random randtime = new Random();
-        this.serviceTime=randtime.nextInt(2,10);
-        this.serviceTime=this.serviceTime*1000;
         try {
             System.out.println("Machine "+this.id+" is processing product "+currentProduct.getId()+" for "+this.serviceTime+" ms");
             Thread.sleep(this.serviceTime);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        this.currentColor = this.defaultColor;
         //send prcessed product to next queue
         outQueue.addProduct(currentProduct);
-
     }
 
     public void notifyObservers() {
@@ -131,11 +148,15 @@ public class Machine extends Subject implements Runnable{
         }
     }
 
+    //set color random
+    public static void setDefaultColor(){
+
+    }
+
     @Override
     public void run() {
         while(true){
             try {
-                // Thread.sleep(1000);
                 notifyObservers();
             } catch (Exception e) {
                 e.printStackTrace();

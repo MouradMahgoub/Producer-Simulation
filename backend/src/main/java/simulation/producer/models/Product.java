@@ -6,24 +6,20 @@ import java.util.Random;
 public class Product {
     private static int count = 0;
     private int id;
-    private Color color;
+    private String color;
 
     public Product() {
         this.id = count++;
-        Random rand = new Random();
-        this.color = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+        Random random = new Random();
+        this.color = String.format("#%02X%02X%02X", random.nextInt(256), random.nextInt(256), random.nextInt(256));
     }
 
-    public Product(Color color) {
-        this.id = count++;
-        this.color = color;
-    }
 
-    public Color getColor() {
+    public String getColor() {
         return this.color;
     }
 
-    public void setColor(Color color) {
+    public void setColor(String color) {
         this.color = color;
     }
 
@@ -31,7 +27,7 @@ public class Product {
         return this.id;
     }
 
-    public Product color(Color color) {
+    public Product color(String color) {
         setColor(color);
         return this;
     }
