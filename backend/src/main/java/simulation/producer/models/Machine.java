@@ -1,5 +1,7 @@
 package simulation.producer.models;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import simulation.producer.models.observer.Subject;
 
 import java.awt.*;
@@ -11,6 +13,7 @@ import java.util.Random;
 
 public class Machine extends Subject implements Runnable{
 
+    private WebSocketController webSocketController;
     private static int count=0;
     private int id = 0;
 
@@ -21,6 +24,10 @@ public class Machine extends Subject implements Runnable{
     private int serviceTime;
 //    private boolean state;
 
+    @Autowired
+    public Machine(WebSocketController webSocketController) {
+        this.webSocketController = webSocketController;
+    }
     public Machine(){
         this.id = count++;
         Random randcol = new Random();
@@ -35,6 +42,7 @@ public class Machine extends Subject implements Runnable{
     public List<Queue> getObserverList() {
         return observerList;
     }
+
 
     public void setObserverList(List<Queue> observerList) {
         this.observerList = observerList;
@@ -108,12 +116,18 @@ public class Machine extends Subject implements Runnable{
         this.currentColor = this.defaultColor;
         //send prcessed product to next queue
         outQueue.addProduct(currentProduct);
+
     }
 
     public void notifyObservers() {
         for (Queue observer : observerList) {
             System.out.println("Machine "+this.id+" is notifying queue "+observer.getId());
             observer.update(this);
+
+//        if (webSocketController != null) {
+
+            webSocketController.sendUpdate("kkkkkkkkkkkkkkkkkkkkkk " + this.id + " processed something");
+//        }
         }
     }
 
@@ -134,21 +148,20 @@ public class Machine extends Subject implements Runnable{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Machine machine = (Machine) o;
-        return count == machine.count && id == machine.id && serviceTime == machine.serviceTime && Objects.equals(observerList, machine.observerList) && Objects.equals(outQueue, machine.outQueue) && Objects.equals(defaultColor, machine.defaultColor) && Objects.equals(currentColor, machine.currentColor);
+        return id == machine.id && serviceTime == machine.serviceTime && Objects.equals(observerList, machine.observerList) && Objects.equals(outQueue, machine.outQueue) && Objects.equals(defaultColor, machine.defaultColor) && Objects.equals(currentColor, machine.currentColor);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(count, observerList, outQueue, id, defaultColor, currentColor, serviceTime);
+        return Objects.hash(id, observerList, outQueue, defaultColor, currentColor, serviceTime);
     }
 
     @Override
     public String toString() {
         return "Machine{" +
-                "count=" + count +
+                "id=" + id +
                 ", observerList=" + observerList +
                 ", outQueue=" + outQueue +
-                ", id=" + id +
                 ", defaultColor=" + defaultColor +
                 ", currentColor=" + currentColor +
                 ", serviceTime=" + serviceTime +

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import lombok.Synchronized;
 import simulation.producer.models.observer.Observer;
 import simulation.producer.models.observer.Subject;
 
@@ -19,14 +20,14 @@ public class Queue implements Observer, Runnable{
     }
 
     @Override
-    public synchronized void update(Subject subject) {
+    public  void update(Subject subject) {
         try{
             if(products.isEmpty()){
                 System.out.println("Queue " + this.id + " is empty");
                 return;
             }
-            System.out.println("Product" + products.peek().getId() + " processed by machine " + ((Machine)subject).getId());
-            ((Machine)subject).process(products.take());
+                System.out.println("Product" + products.peek().getId() + " processed by machine " + ((Machine) subject).getId());
+                ((Machine) subject).process(products.take());
         }catch(Exception e){
             e.printStackTrace();
         }
