@@ -1,7 +1,10 @@
 package simulation.producer.models;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import simulation.producer.models.observer.Subject;
-import simulation.producer.models.WebSocketController ;
+import simulation.producer.models.WebSocketController;
+
+
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -11,7 +14,8 @@ import java.util.Random;
 
 public class Machine extends Subject implements Runnable{
 
-    private WebSocketController webSocketController;
+    @Autowired
+    WebSocketController webSocketController;
     private static int count = 0;
     private static String defaultColor;
 
@@ -135,13 +139,13 @@ public class Machine extends Subject implements Runnable{
         //send prcessed product to next queue
         outQueue.addProduct(currentProduct);
         this.currentColor = Machine.defaultColor;
-        webSocketController.sendUpdate("Product processed by machine " + this.id);
     }
 
     public void notifyObservers() {
         for (Queue observer : observerList) {
             System.out.println("Machine "+this.id+" is notifying queue "+observer.getId());
             observer.update(this);
+            webSocketController.sendUpdate("Product processed by machine " + this.id);
         }
     }
 
