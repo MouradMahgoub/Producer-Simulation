@@ -11,21 +11,21 @@ public class SimulationController {
 
     @MessageMapping("/start")
     // @SendTo("/topic/updates")
-    public String handleStart(String message) {
+    public void handleStart(String message) {
         SimulationManager.getInstance().start();
-        return "Simulation started!";
+        // return "Simulation started!";
     }
 
     @MessageMapping("/stop")
     // @SendTo("/topic/updates")
-    public String handleStop(String message) {
+    public void handleStop(String message) {
         SimulationManager.getInstance().stop();
         // return "Simulation stopped!";
     }
 
     @MessageMapping("/pause")
     // @SendTo("/topic/updates")
-    public String handlePause(String message) {
+    public void handlePause(String message) {
 
         SimulationManager.getInstance().pause();
         // return "Simulation paused!";
