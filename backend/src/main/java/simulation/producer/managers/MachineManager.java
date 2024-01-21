@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import simulation.producer.models.Machine;
 import simulation.producer.models.Queue;
+import simulation.producer.models.WebSocketController;
 
 public class MachineManager {
     private static MachineManager instance = null;
+    WebSocketController myWebSocketController = new WebSocketController();
     
     private MachineManager() {
     }
@@ -19,7 +21,7 @@ public class MachineManager {
     }
 
     public ArrayList<Machine> addMachine(String x, String y, String defaultColor) {
-        SimulationManager.getInstance().machines.add(new Machine(x, y, defaultColor));
+        SimulationManager.getInstance().machines.add(new Machine(x, y, defaultColor,myWebSocketController));
         return SimulationManager.getInstance().machines;
     }
 

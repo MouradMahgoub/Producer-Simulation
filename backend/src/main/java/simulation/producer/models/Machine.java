@@ -1,6 +1,7 @@
 package simulation.producer.models;
 
 import simulation.producer.models.observer.Subject;
+import simulation.producer.models.WebSocketController ;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Random;
 
 public class Machine extends Subject implements Runnable{
 
+    private WebSocketController webSocketController;
     private static int count = 0;
     private static String defaultColor;
 
@@ -23,12 +25,13 @@ public class Machine extends Subject implements Runnable{
     private String currentColor;
     private int serviceTime;
 
-    public Machine(String x, String y, String defaultColor){
+    public Machine(String x, String y, String defaultColor,WebSocketController webSocketController){
         this.id = count++;
         this.x = x;
         this.y = y;
         this.serviceTime = (new Random()).nextInt(2, 8)*1000;
         Machine.defaultColor = defaultColor;
+        this.webSocketController=webSocketController;
     }
 
     // convert a rgb Color representation to hexa representation
@@ -132,6 +135,7 @@ public class Machine extends Subject implements Runnable{
         //send prcessed product to next queue
         outQueue.addProduct(currentProduct);
         this.currentColor = Machine.defaultColor;
+        webSocketController.sendUpdate("Product processed by machine " + this.id);
     }
 
     public void notifyObservers() {
