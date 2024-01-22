@@ -1,5 +1,4 @@
 package simulation.producer.models;
-import java.awt.Color;
 import java.util.Objects;
 import java.util.Random;
 

@@ -1,5 +1,6 @@
 package simulation.producer.models;
 
+import simulation.producer.managers.SimulationManager;
 import simulation.producer.models.observer.Subject;
 
 import java.awt.*;
@@ -11,7 +12,7 @@ import java.util.Random;
 public class Machine extends Subject implements Runnable{
 
     private static int count = 0;
-    private static String defaultColor;
+    private  String defaultColor;
 
     
     private int id;
@@ -22,15 +23,39 @@ public class Machine extends Subject implements Runnable{
     private Queue outQueue;
     private String currentColor;
     private int serviceTime;
-
     public Machine(String x, String y, String defaultColor){
         this.id = count++;
         this.x = x;
         this.y = y;
         this.serviceTime = (new Random()).nextInt(2, 8)*1000;
         this.currentColor = defaultColor;
-        Machine.defaultColor = defaultColor;
+        this.defaultColor = defaultColor;
     }
+
+    public Machine(Machine other) {
+        this.id = other.id;
+        this.x = other.x;
+        this.y = other.y;
+        this.serviceTime = other.serviceTime;
+        this.currentColor = other.currentColor;
+        this.defaultColor = other.defaultColor;
+        if(this.currentColor==null){
+            this.currentColor=other.defaultColor;
+        }
+
+        // Copy the observerList
+        this.observerList = new ArrayList<>();
+        for (Queue observer : other.observerList) {
+            this.observerList.add(new Queue(observer));
+        }
+
+        // You might want to adjust this part based on your actual implementation
+        if (other.outQueue != null) {
+            this.outQueue = new Queue(other.outQueue);
+        }
+    }
+
+
 
     // convert a rgb Color representation to hexa representation
 
@@ -56,6 +81,7 @@ public class Machine extends Subject implements Runnable{
     public void setY(String y){
         this.y = y;
     }
+
 
 
     public List<Queue> getObserverList() {
@@ -110,13 +136,15 @@ public class Machine extends Subject implements Runnable{
         this.currentColor = currentProduct.getColor();
         try {
             System.out.println("Machine "+this.id+" is processing product "+currentProduct.getId()+" for "+this.serviceTime+" ms");
+            SimulationManager.getInstance().sendToMemento();
             Thread.sleep(this.serviceTime);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         //send prcessed product to next queue
         outQueue.addProduct(currentProduct);
-        this.currentColor = Machine.defaultColor;
+        this.currentColor = this.defaultColor;
+
     }
 
     public void notifyObservers() {

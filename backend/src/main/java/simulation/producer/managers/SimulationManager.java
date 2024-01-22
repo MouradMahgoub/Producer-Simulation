@@ -1,20 +1,26 @@
 package simulation.producer.managers;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import simulation.producer.models.Machine;
 import simulation.producer.models.Product;
 import simulation.producer.models.Queue;
+import simulation.producer.models.ResponseObject;
+import simulation.producer.models.memento.CareTaker;
 
 public class SimulationManager {
+    private static int count=0;
+    private static int num=0;
+    static CareTaker memento=new CareTaker();
     ArrayList<Queue> queues = new ArrayList<Queue>();
-    ArrayList<Machine> machines = new ArrayList<Machine>(); 
+    ArrayList<Machine> machines = new ArrayList<Machine>();
     private static SimulationManager instance = null;
 
     private SimulationManager() {
     }
-    
+
     public static synchronized SimulationManager getInstance() {
         if (instance == null) {
             instance = new SimulationManager();
@@ -29,7 +35,6 @@ public class SimulationManager {
     public ArrayList<Machine> getMachines() {
         return machines;
     }
-
     //start simulation
     public void start() {
         try {
@@ -54,6 +59,7 @@ public class SimulationManager {
             for(Machine machine : machines){
                 Thread thread = new Thread(machine);
                 thread.start();
+                SimulationManager.getInstance().sendToMemento();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -84,7 +90,20 @@ public class SimulationManager {
         }
     }
 
-    public static void main(String[] args) {
+    public void sendToMemento() {
+            System.out.println("mmmmmmmmmmmmmmmmmmmmmmm");
+        memento.add(new ResponseObject(getMachines(),getQueues()));
+            System.out.println(memento.get(count++));
+    }
+
+    public void Replay() {
+        for(int i=0;i<memento.getSize();i++) {
+            System.out.println("rrrrrrrrrrrrrrrrrrrrrrrrrrrr");
+            System.out.println(memento.get(num++));
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
 
         // SimulationManager simulationManager = new SimulationManager();
         
@@ -109,7 +128,18 @@ public class SimulationManager {
         QueueManager.getInstance().connectQueueToMachine(2, 3);
         
         MachineManager.getInstance().connectMAchineToQueue(3, 3);
-        
+
         SimulationManager.getInstance().start();
+        Thread.sleep(10000);  // Allow simulation to run
+
+
+            SimulationManager.getInstance().Replay();
+
+
+
+
+        System.out.println("Lllllllllllllll");
+
+
     }
 }

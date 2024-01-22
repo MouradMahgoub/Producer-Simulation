@@ -1,6 +1,5 @@
 package simulation.producer.models;
 
-import java.awt.Color;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -20,6 +19,18 @@ public class Queue implements Observer{
         this.x = x;
         this.y = y;
     }
+    public Queue(Queue other) {
+        this.id = other.id;
+        this.x = other.x;
+        this.y = other.y;
+
+        // Create a new BlockingQueue and copy each Product
+        this.products = new LinkedBlockingQueue<>();
+        for (Product product : other.products) {
+            this.products.add(new Product());
+        }
+    }
+
 
     @Override
     public void update(Subject subject) {

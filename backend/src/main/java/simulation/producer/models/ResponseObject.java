@@ -1,29 +1,32 @@
 package simulation.producer.models;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ResponseObject {
-    private ArrayList<Machine> machines;
-    private ArrayList<Queue> queues;
+    private List<Machine> machines;
+    private List<Queue> queues;
 
-    public ResponseObject(ArrayList<Machine> machines, ArrayList<Queue> queues) {
-        this.machines = machines;
-        this.queues = queues;
+    public ResponseObject(List<Machine> machines, List<Queue> queues) {
+        // Make a deep copy to avoid reference sharing
+        this.machines = new ArrayList<>(machines);
+        this.queues = new ArrayList<>(queues);
     }
 
-    public ArrayList<Machine> getMachines() {
+
+    public List<Machine> getMachines() {
         return machines;
     }
 
-    public void setMachines(ArrayList<Machine> machines) {
-        this.machines = machines;
-    }
-
-    public ArrayList<Queue> getQueues() {
+    public List<Queue> getQueues() {
         return queues;
     }
 
-    public void setQueues(ArrayList<Queue> queues) {
-        this.queues = queues;
+    @Override
+    public String toString() {
+        return "ResponseObject{" +
+                "machines=" + machines +
+                ", queues=" + queues +
+                '}';
     }
 }
