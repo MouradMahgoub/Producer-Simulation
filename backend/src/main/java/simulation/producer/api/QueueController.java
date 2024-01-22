@@ -2,6 +2,7 @@ package simulation.producer.api;
 
 import java.util.ArrayList;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import simulation.producer.models.RequestObject;
 
 
 @RestController
+@CrossOrigin
 public class QueueController {
         
         @PostMapping("/queue/add")

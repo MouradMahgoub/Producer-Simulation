@@ -23,7 +23,7 @@ public class SimulationUpdater {
         this.messagingTemplate = messagingTemplate;
     }
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 100)
     public void sendSimulationUpdates() {
         messagingTemplate.convertAndSend("/topic/updates", new ResponseObject(SimulationManager.getInstance().getMachines(), SimulationManager.getInstance().getQueues()));
         System.out.println(SimulationManager.getInstance().getMachines());

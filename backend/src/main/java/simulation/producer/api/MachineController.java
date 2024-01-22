@@ -8,12 +8,14 @@ import simulation.producer.models.RequestObject;
 
 import java.util.ArrayList;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
+@CrossOrigin
 public class MachineController {
     
     @PostMapping("/machine/add")
