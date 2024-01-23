@@ -14,9 +14,9 @@ export default {
   name: 'taskBar',
   data:()=>({
     
-    buttons:["play","Stop","Stop input","Replay","New Simulation", "Add Machine","Add Queue",'connect items'],
-    icons:["mdi-play","mdi-stop",'mdi-pause','mdi-replay','','mdi-factory','mdi-queue-first-in-last-out','mdi-arrow-right-bold'],
-    iconcolors:["green",'red','red','black','black','black','black'],
+    buttons:["play","Stop","Replay","New Simulation", "Add Machine","Add Queue",'connect items'],
+    icons:["mdi-play","mdi-stop",'mdi-replay','','mdi-factory','mdi-queue-first-in-last-out','mdi-arrow-right-bold'],
+    iconcolors:["green",'red','black','black','black','black'],
     disablebutton:Array(8).fill(false),
     clickedButton:null,
     customcolors:[],
@@ -28,46 +28,43 @@ export default {
       this.isActive=true;
     },
     handleclick(index){
-      if(index!==2&&index!==4){
+      if(index!==2&&index!==3){
       this.clickedButton=index;
       }
       switch(index){
         case 0:
           this.disablebutton[5]=true;
           this.disablebutton[6]=true;
-          this.disablebutton[7]=true;
+          this.disablebutton[4]=true;
           this.play();
           break;
         case 1:
           this.disablebutton[5]=true;
           this.disablebutton[6]=true;
-          this.disablebutton[7]=true;
+          this.disablebutton[4]=true;
           this.stop();
           break
         case 2:
-        this.stopInput();
-          break;
-        case 3:
           this.disablebutton[5]=true;
           this.disablebutton[6]=true;
-          this.disablebutton[7]=true;
+          this.disablebutton[4]=true;
           this.clickedButton=0
           this.replay();
           break;
-        case 4:
+        case 3:
         this.clickedButton=null;
           this.disablebutton[5]=false;
           this.disablebutton[6]=false;
-          this.disablebutton[7]=false;
+          this.disablebutton[4]=false;
           this.newSim();
           break;
-        case 5:
+        case 4:
           this.addMachine();
           break; 
-        case 6:
+        case 5:
           this.addQueue();
           break;
-        case 7:
+        case 6:
           this.addArrow();
           break;
       }
@@ -84,9 +81,6 @@ export default {
     },
     addQueue(){
       this.$emit('addQueue');
-    },
-    stopInput(){
-      // this.$emit('pauseSimulation');
     },
     replay(){
       this.$emit('replaySimulation');
