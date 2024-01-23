@@ -1,7 +1,7 @@
 <template>
     
     <div class="page">
-     <taskBar @addMachine="addMachine" @addQueue="addQueue" @addArrow="addArrow" @startSimulation="startSimulation" @newSimulation="newSimulation"/>
+     <taskBar @addMachine="addMachine" @addQueue="addQueue" @addArrow="addArrow" @startSimulation="startSimulation" @newSimulation="newSimulation" @pauseSimulation="pauseSimulation" @replaySimulation="replaySimulation"/>
 
      <div class="konva-holder"></div>
     </div>
@@ -28,7 +28,9 @@ export default {
       newMachineId:0,
       arrowSrc:null,
       arrowDest:null,
-      starting:false,
+
+      isStarting:false,
+      isPausing:false,
       isDrawingQueue:false,
       isDrawingMachine:false,
       isDrawingArrow:false,
@@ -64,6 +66,8 @@ export default {
       this.isDrawingMachine=false;
       this.isDrawingArrow=false;
       this.isStartedArrow=false;
+      this.isStarting=false;
+      this.isPausing=false;
     },
 
     async createKonvaStage() {//creating stage with events (if i click a shape then i clicked the screen it will create a shape)create line in this(special case ) 
@@ -130,7 +134,16 @@ export default {
 
     drawKonvaShape(shape,type) {// (print the array ) take a shape object and convert it to element of Konva and have the events of every shape(methods)
        let newShape=null;
+       let textX=10;
+       let textY=10;
        let ParsedShape=this.parseToKonvaBack(shape,type);
+      //  if(type === 'machine'){
+      //   textD=17;
+      //  }
+       if(type === 'machine'&&ParsedShape.fill=="#FF6868"){
+        textX=18;
+        textY=12;
+        }
         if (type=== 'arrow') {
         newShape =  new Konva.Arrow({
                 points: shape.points, // Define the start and end points of the arrow
@@ -142,6 +155,7 @@ export default {
             });
         } 
         else if (type === 'machine') {
+           
             newShape = new Konva.Circle(ParsedShape);
             newShape.attrs.stroke='black';
             newShape.attrs.strokeWidth=1;
@@ -160,8 +174,8 @@ export default {
         }
         
         let text = new Konva.Text({
-            x: newShape.attrs.x-10,
-            y: newShape.attrs.y-10,
+            x: newShape.attrs.x-textX,
+            y: newShape.attrs.y-textY,
             text: ParsedShape.text,
             fontSize: 15,
             fontFamily: 'Calibri',
@@ -206,7 +220,15 @@ export default {
        x.fill="#A1EEBD";
       }
       else {
+        // console.log(JSON.stringify(shape, null, 2));
+
         x.text="M"+shape.id.toString();
+        if(shape.currentColor!=shape.defaultColor){
+          x.text+="\n"+(shape.remainingTime/1000).toString();
+        }
+        else{
+          x.text+="\n"+"Ready";
+        }
         x.fill=shape.currentColor;
       }
       return x;
@@ -293,6 +315,8 @@ export default {
             .then(response => response.json())
             .then(data => {
                 this.allMachines = data;
+                // console.log(JSON.stringify(this.allMachines, null, 2));
+
                 this.clearAndDraw();
             })
             .catch(error => console.error('Error changing list:', error));
@@ -357,26 +381,70 @@ export default {
       this.allMachines=[];
       this.allQueues=[];
       this.clearAndDraw();
+      if (this.stompClient && this.stompClient.connected) {
+        this.stompClient.send("/app/newSimulation", {}, JSON.stringify({ message: "new Simulation" }));
+      }
+      else {
+        console.error("Not connected to WebSocket");
+      }
     },
     startSimulation() {
-      this.starting=true;
-      // Send a message to the '/app/start' endpoint
+      // this.clear()
+      // this.isStarting=true;
+      console.log("startSimulation");
+      if(this.isPausing){
+        this.resumeSimulation();
+      }
+      else{
+        // Send a message to the '/app/start' endpoint
+        if (this.stompClient && this.stompClient.connected) {
+          
+          this.clear()
+          this.isStarting=true;
+          console.log("start")
+          this.stompClient.send("/app/start", {}, JSON.stringify({ message: "Start the simulation" }));
+        }
+        else {
+          console.error("Not connected to WebSocket");
+        }
+      }  
+    },
+    
+    pauseSimulation() {
+      this.clear();
+      console.log("pause");
+      this.isPausing=true;
       if (this.stompClient && this.stompClient.connected) {
-        this.stompClient.send("/app/start", {}, JSON.stringify({ message: "Start the simulation" }));
+        this.stompClient.send("/app/pause", {}, JSON.stringify({ message: "pause the simulation !!!!" }));
       }
       else {
         console.error("Not connected to WebSocket");
       }
     },
-    stopSimulation() {
-      // Send a message to the '/app/start' endpoint
+
+    resumeSimulation() {
+      this.clear();
+      console.log("resume");
+      this.isStarting=true;
       if (this.stompClient && this.stompClient.connected) {
-        this.stompClient.send("/app/stop", {}, JSON.stringify({ message: "stop the simulation !!!!" }));
+        this.stompClient.send("/app/resume", {}, JSON.stringify({ message: "resume the simulation !!!!" }));
       }
       else {
         console.error("Not connected to WebSocket");
       }
     },
+    replaySimulation(){
+      this.clear();
+      this.isStarting=true;
+      console.log("replay");
+      if (this.stompClient && this.stompClient.connected) {
+        this.stompClient.send("/app/replay", {}, JSON.stringify({ message: "replay the simulation !!!!" }));
+      }
+      else {
+        console.error("Not connected to WebSocket");
+      }
+    },
+    
     openChannel() {
       this.clear();
 
@@ -395,7 +463,7 @@ export default {
           this.allQueues  =queues;
           // console.log(JSON.stringify(this.allQueues, null, 2));
           // console.log(JSON.stringify(this.allMachines, null, 2));
-          if(this.starting){
+          if(this.isStarting){
            this.clearAndDraw();
           }
         });

@@ -24,6 +24,14 @@ public class Machine extends Subject implements Runnable{
     private String currentColor;
     private int serviceTime;
     private int remainingTime;
+    public int getRemainingTime() {
+        return remainingTime;
+    }
+
+    public void setRemainingTime(int remainingTime) {
+        this.remainingTime = remainingTime;
+    }
+
     private AtomicBoolean isRunning = new AtomicBoolean(true);
     private boolean paused = false;
 
@@ -163,12 +171,12 @@ public class Machine extends Subject implements Runnable{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Machine machine = (Machine) o;
-        return count == machine.count && id == machine.id && serviceTime == machine.serviceTime && Objects.equals(observerList, machine.observerList) && Objects.equals(outQueue, machine.outQueue) && Objects.equals(defaultColor, machine.defaultColor) && Objects.equals(currentColor, machine.currentColor);
+        return count == machine.count && id == machine.id && serviceTime == machine.serviceTime && Objects.equals(observerList, machine.observerList) && Objects.equals(outQueue, machine.outQueue) && Objects.equals(defaultColor, machine.defaultColor) && Objects.equals(currentColor, machine.currentColor)&& remainingTime==machine.remainingTime;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(count, observerList, outQueue, id, defaultColor, currentColor, serviceTime);
+        return Objects.hash(count, observerList, outQueue, id, defaultColor, currentColor,remainingTime,serviceTime);
     }
 
     @Override
@@ -179,6 +187,7 @@ public class Machine extends Subject implements Runnable{
                 ", outQueue=" + outQueue +
                 ", id=" + id +
                 ", defaultColor=" + defaultColor +
+                ", remainingTime=" + remainingTime +
                 ", currentColor=" + currentColor +
                 ", serviceTime=" + serviceTime +
                 '}';
