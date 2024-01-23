@@ -10,23 +10,14 @@ import simulation.producer.managers.SimulationManager;
 public class SimulationController {
 
     @MessageMapping("/start")
-    // @SendTo("/topic/updates")
     public void handleStart(String message) {
         SimulationManager.getInstance().start();
-        // return "Simulation started!";
     }
-
-    // @MessageMapping("/stop")
-    // // @SendTo("/topic/updates")
-    // public void handleStop(String message) {
-    //     SimulationManager.getInstance().stop();
-    //     // return "Simulation stopped!";
-    // }
 
     @MessageMapping("/pause")
-    // @SendTo("/topic/updates")
     public void handlePause(String message) {
         SimulationManager.getInstance().pause();
-        // return "Simulation paused!";
     }
+
+    
 }

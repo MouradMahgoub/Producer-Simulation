@@ -14,11 +14,11 @@ import simulation.producer.models.memento.Originator;
 public class SimulationManager {
     ArrayList<Queue> queues = new ArrayList<Queue>();
     ArrayList<Machine> machines = new ArrayList<Machine>(); 
-    private static SimulationManager instance = null;
     ArrayList<ArrayList<Product>> careTaker = new ArrayList<>();
     boolean paused = false;
     boolean replay = false;
-        
+    
+    private static SimulationManager instance = null;
     private SimulationManager() {
     }
     
@@ -41,6 +41,12 @@ public class SimulationManager {
         careTaker.add(products);
     }   
     
+    public void newSimulation(){
+        queues.clear();
+        machines.clear();
+        careTaker.clear();
+    }
+
     //start simulation
     public void start() {
         try {
